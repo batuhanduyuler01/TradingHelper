@@ -6,9 +6,10 @@ from math import floor
 
 class MACD :
 
-    def __init__(self, date = '2019-01-01', slow = 26, fast = 12, smooth = 9):
+    def __init__(self, dataframe, date = '2019-01-01', slow = 26, fast = 12, smooth = 9):
         # Initialize DataFrames
-        self.data = pd.read_csv("../past_work/Veri_Setleri/GARAN.IS.csv")
+        #self.data = pd.read_csv("../past_work/Veri_Setleri/GARAN.IS.csv")
+        self.data = dataframe.copy()
         self.data = self.data[self.data.Date > str(date)]
         self.data = self.data.set_index(pd.DatetimeIndex(self.data['Date'].values))
         self.macd_df = pd.DataFrame()
