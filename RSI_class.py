@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 from pandas.core.series import Series 
 
 class RSI:
-    def __init__(self, date = '2019-01-01', lookback = 7):
+    def __init__(self, dataframe, date = '2019-01-01', lookback = 7):
         # Initialize Dataframe Parameters
-        self.data = pd.read_csv("../past_work/Veri_Setleri/GARAN.IS.csv")
+        #self.data = pd.read_csv("../past_work/Veri_Setleri/GARAN.IS.csv")
+        self.data = dataframe.copy()
         self.data = self.data[self.data.Date > str(date)]
         self.data = self.data.set_index(pd.DatetimeIndex(self.data['Date'].values))
         self.df_RSI = pd.DataFrame()
