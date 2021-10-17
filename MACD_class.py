@@ -95,6 +95,19 @@ class MACD :
         plt.legend(loc = 'lower right')
         plt.show()
 
+    def saveStrategy(self, dataframe = pd.DataFrame()) :
+        self.implementStrategy()
+        self.positionDF = dataframe.copy()
+        if "Date" in self.positionDF :
+            pass
+        else:
+            self.positionDF["Date"] = self.data.index
+
+        self.positionDF["Macd_Buy_Position"] = self.buy_price
+        self.positionDF["Macd_Sell_Position"] = self.sell_price
+        return self.positionDF
+
+
 
         
 

@@ -76,6 +76,19 @@ class Bollinger :
         plt.legend(loc = 'upper left')
         plt.show()
 
+    def saveStrategy(self, dataframe = pd.DataFrame()) :
+        self.implementStrategy()
+        self.positionDF = dataframe.copy()
+        if "Date" in self.positionDF :
+            pass
+        else:
+            self.positionDF["Date"] = self.data.index
+
+        self.positionDF["Bollinger_Buy_Position"] = self.__buy_price
+        self.positionDF["Bollinger_Sell_Position"] = self.__sell_price
+        print(self.positionDF.head(50))
+        return self.positionDF
+
 
                 
 

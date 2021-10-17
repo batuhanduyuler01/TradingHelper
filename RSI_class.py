@@ -13,6 +13,8 @@ class RSI:
         self.data = self.data[self.data.Date > str(date)]
         self.data = self.data.set_index(pd.DatetimeIndex(self.data['Date'].values))
         self.df_RSI = pd.DataFrame()
+        self.lower_band = 15
+        self.upper_band = 85
 
         # Initialize Strategy Parameters
         self.buy_price = []
@@ -55,7 +57,7 @@ class RSI:
         rsi = self.data.RSI_14
 
         for element in range(0,len(rsi)):
-            if ((rsi[element - 1] > 30) and (rsi[element] < 30)):
+            if ((rsi[element - 1] > self.lower_band) and (rsi[element] < self.lower_band)):
                 if (self.signal != 1):
                     self.buy_price.append(self.prices[element])
                     self.sell_price.append(np.nan)
@@ -66,7 +68,7 @@ class RSI:
                     self.sell_price.append(np.nan)
                     self.rsi_signal.append(0)
 
-            elif ((rsi[element - 1] < 70) and (rsi[element] > 70)):
+            elif ((rsi[element - 1] < self.upper_band) and (rsi[element] > self.upper_band)):
                 if (self.signal != -1):
                     self.buy_price.append(np.nan)
                     self.sell_price.append(self.prices[element])
@@ -101,6 +103,18 @@ class RSI:
         self.__obtainRSI()
         print("--------")
         print(self.data.head(10))
+
+    def saveStrategy(self, dataframe = pd.DataFrame()) :
+        self.__implementStrategy()
+        self.positionDF = dataframe.copy()
+        if "Date" in self.positionDF :
+            pass 
+        else:
+            self.positionDF["Date"] = self.data.index
+
+        self.positionDF["RSI_Buy_Position"] = self.buy_price
+        self.positionDF["RSI_Sell_Position"] = self.sell_price
+        return self.positionDF
 
 
 
