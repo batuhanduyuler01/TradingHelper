@@ -20,10 +20,10 @@ class PredictionManager:
         """
         self.algorithmHelper = algoManager.AlgorithmManager(stockName = stockName, period = period, interval = interval)
 
-    def helpTrading(self):
+    def helpTrading(self, rowNumber = 30):
         self.algorithmHelper.findOnlyTradings()
-        self.algorithmHelper.printDataFrame(30)
-        self.algorithmHelper.printOnlyTradings(30)
+        self.algorithmHelper.printDataFrame(rowNumber)
+        self.algorithmHelper.printOnlyTradings(rowNumber)
         self.algorithmHelper.getFinalDate()
 
 
