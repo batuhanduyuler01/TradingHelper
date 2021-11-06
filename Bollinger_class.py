@@ -16,6 +16,10 @@ class Bollinger :
         self.__sell_price = list()
         self.__BB_signal = list()
         self.__signal = 0
+    def getBuyPriceInfo(self):
+        return self.__buy_price
+    def getSellPriceInfo(self):
+        return self.__sell_price
 
     def __calculateSMA(self):
         self.__sma = self.data['Close'].rolling(window = self.window).mean()

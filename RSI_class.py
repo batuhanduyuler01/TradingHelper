@@ -17,12 +17,16 @@ class RSI:
         self.upper_band = 85
 
         # Initialize Strategy Parameters
-        self.buy_price = []
-        self.sell_price = []
+        self.__buy_price = []
+        self.__sell_price = []
         self.rsi_signal = []
         self.signal = 0
         self.prices = self.data.Close
         self.lookback = lookback
+    def getSellPriceInfo(self):
+        return self.__sell_price
+    def getBuyPriceInfo(self):
+        return self.__buy_price
 
     def __obtainRSI(self):
         close = self.data.Close #self.prices ile değiştirilebilir ileride
@@ -52,47 +56,47 @@ class RSI:
         temp_df = pd.DataFrame(rsi).rename(columns={0 : 'rsi'}).set_index(close.index)
         self.data['RSI_14'] = temp_df[3:]
 
-    def __implementStrategy(self):
+    def implementStrategy(self):
         self.__obtainRSI()
         rsi = self.data.RSI_14
 
         for element in range(0,len(rsi)):
             if ((rsi[element - 1] > self.lower_band) and (rsi[element] < self.lower_band)):
                 if (self.signal != 1):
-                    self.buy_price.append(self.prices[element])
-                    self.sell_price.append(np.nan)
+                    self.__buy_price.append(self.prices[element])
+                    self.__sell_price.append(np.nan)
                     self.signal = 1
                     self.rsi_signal.append(self.signal)
                 else:
-                    self.buy_price.append(np.nan)
-                    self.sell_price.append(np.nan)
+                    self.__buy_price.append(np.nan)
+                    self.__sell_price.append(np.nan)
                     self.rsi_signal.append(0)
 
             elif ((rsi[element - 1] < self.upper_band) and (rsi[element] > self.upper_band)):
                 if (self.signal != -1):
-                    self.buy_price.append(np.nan)
-                    self.sell_price.append(self.prices[element])
+                    self.__buy_price.append(np.nan)
+                    self.__sell_price.append(self.prices[element])
                     self.signal = -1
                     self.rsi_signal.append(self.signal)
                 else:
-                    self.buy_price.append(np.nan)
-                    self.sell_price.append(np.nan)
+                    self.__buy_price.append(np.nan)
+                    self.__sell_price.append(np.nan)
                     self.rsi_signal.append(0)
             else:
-                self.buy_price.append(np.nan)
-                self.sell_price.append(np.nan)
+                self.__buy_price.append(np.nan)
+                self.__sell_price.append(np.nan)
                 self.rsi_signal.append(0)
     
     def plotStrategy(self):
 
-        self.__implementStrategy()
+        self.implementStrategy()
 
         ax1 = plt.subplot2grid((15,1), (0,0), rowspan = 8, colspan = 1)
         ax2 = plt.subplot2grid((15,1), (10,0), rowspan = 8, colspan = 1)
         
         ax1.plot(self.data.Close, linewidth = 2.5, color = 'skyblue', label = 'Kağıt')
-        ax1.plot(self.data.index, self.buy_price, marker = '^', markersize = 10, color = 'green', label = 'AL')
-        ax1.plot(self.data.index, self.sell_price, marker = 'v', markersize = 10, color = 'r', label = 'SAT')
+        ax1.plot(self.data.index, self.__buy_price, marker = '^', markersize = 10, color = 'green', label = 'AL')
+        ax1.plot(self.data.index, self.__sell_price, marker = 'v', markersize = 10, color = 'r', label = 'SAT')
         ax1.set_title('RSI Indikatörü')
         ax2.plot(self.data['RSI_14'], color = 'orange', linewidth = 2.5)
         ax2.axhline(30, linestyle = '--', linewidth = 1.5, color = 'grey')
@@ -105,15 +109,15 @@ class RSI:
         print(self.data.head(10))
 
     def saveStrategy(self, dataframe = pd.DataFrame()) :
-        self.__implementStrategy()
+        self.implementStrategy()
         self.positionDF = dataframe.copy()
         if "Date" in self.positionDF :
             pass 
         else:
             self.positionDF["Date"] = self.data.index
 
-        self.positionDF["RSI_Buy_Position"] = self.buy_price
-        self.positionDF["RSI_Sell_Position"] = self.sell_price
+        self.positionDF["RSI_Buy_Position"] = self.__buy_price
+        self.positionDF["RSI_Sell_Position"] = self.__sell_price
         return self.positionDF
 
 
