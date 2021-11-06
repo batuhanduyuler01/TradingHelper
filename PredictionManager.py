@@ -1,14 +1,7 @@
 from datetime import date
-
-from numpy.core.numeric import NaN
-import MACD_class as macd
-import RSI_class as rsi
 import Database_class as db
-import Bollinger_class as bb
 import AlgorithmicTrading_class as algoManager
-import yFinance_class as yfHelper
-import pandas as pd
-import numpy as np
+
 
 
 class PredictionManager:
