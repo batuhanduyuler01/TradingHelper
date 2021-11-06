@@ -18,10 +18,15 @@ class MACD :
         self.fast = fast 
         self.smooth = smooth
         # Initialize Strategy parameters
-        self.buy_price = list()
-        self.sell_price = list()
+        self.__buy_price = list()
+        self.__sell_price = list()
         self.macd_signal = list()
         self.signal = 0
+
+    def getSellPriceInfo(self):
+        return self.__sell_price
+    def getBuyPriceInfo(self):
+        return self.__buy_price
 
     def showData(self, isTrue):
         if (isTrue):
@@ -50,27 +55,27 @@ class MACD :
 
             if ((self.macd_df["MACD"][element]) > (self.macd_df["signal"][element])):
                 if self.signal != 1:
-                    self.buy_price.append(prices[element])
-                    self.sell_price.append(np.nan)
+                    self.__buy_price.append(prices[element])
+                    self.__sell_price.append(np.nan)
                     self.signal = 1
                     self.macd_signal.append(self.signal)
                 else:
-                    self.buy_price.append(np.nan)
-                    self.sell_price.append(np.nan)
+                    self.__buy_price.append(np.nan)
+                    self.__sell_price.append(np.nan)
                     self.macd_signal.append(0)
             elif ((self.macd_df["MACD"][element]) < (self.macd_df["signal"][element])):
                 if self.signal != -1:
-                    self.buy_price.append(np.nan)
-                    self.sell_price.append(prices[element])
+                    self.__buy_price.append(np.nan)
+                    self.__sell_price.append(prices[element])
                     self.signal = -1
                     self.macd_signal.append(0)
                 else:
-                    self.buy_price.append(np.nan)
-                    self.sell_price.append(np.nan)
+                    self.__buy_price.append(np.nan)
+                    self.__sell_price.append(np.nan)
                     self.macd_signal.append(0)
             else:
-                self.buy_price.append(np.nan)
-                self.sell_price.append(np.nan)
+                self.__buy_price.append(np.nan)
+                self.__sell_price.append(np.nan)
                 self.macd_signal.append(0)
 
     def plotStrategy(self):
@@ -80,8 +85,8 @@ class MACD :
         ax2 = plt.subplot2grid((15,1), (10,0), rowspan = 8, colspan = 1)
 
         ax1.plot(self.data.Close , color = 'skyblue', linewidth = 2, label = 'KAĞIT')
-        ax1.plot(self.data.index, self.buy_price, marker = '^', color = 'green', markersize = 10, label = 'Alım Sinyali', linewidth = 0)     
-        ax1.plot(self.data.index, self.sell_price, marker = 'v', color = 'r', markersize = 10, label = 'Satış Sinyali', linewidth = 0)     
+        ax1.plot(self.data.index, self.__buy_price, marker = '^', color = 'green', markersize = 10, label = 'Alım Sinyali', linewidth = 0)     
+        ax1.plot(self.data.index, self.__sell_price, marker = 'v', color = 'r', markersize = 10, label = 'Satış Sinyali', linewidth = 0)     
         ax1.legend()
         ax1.set_title('MACD Stratejisi')
         ax2.plot(self.macd_df['MACD'], color = 'grey', linewidth = 1.5, label = 'MACD')
@@ -103,8 +108,8 @@ class MACD :
         else:
             self.positionDF["Date"] = self.data.index
 
-        self.positionDF["Macd_Buy_Position"] = self.buy_price
-        self.positionDF["Macd_Sell_Position"] = self.sell_price
+        self.positionDF["Macd_Buy_Position"] = self.__buy_price
+        self.positionDF["Macd_Sell_Position"] = self.__sell_price
         return self.positionDF
 
 
