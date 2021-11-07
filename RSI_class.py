@@ -108,18 +108,6 @@ class RSI:
         print("--------")
         print(self.data.head(10))
 
-    def saveStrategy(self, dataframe = pd.DataFrame()) :
-        self.implementStrategy()
-        self.positionDF = dataframe.copy()
-        if "Date" in self.positionDF :
-            pass 
-        else:
-            self.positionDF["Date"] = self.data.index
-
-        self.positionDF["RSI_Buy_Position"] = self.__buy_price
-        self.positionDF["RSI_Sell_Position"] = self.__sell_price
-        return self.positionDF
-
 
 
 
