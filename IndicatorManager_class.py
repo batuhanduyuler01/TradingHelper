@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-class AlgorithmManager():
+class IndicatorManager():
     def __init__(self, stockName, period, interval):
         self.yData = yfHelper.yFinance(stockName, period, interval)
         self.bollinger = bb.Bollinger(self.yData.getData(), date='2015-01-01')
@@ -18,6 +18,7 @@ class AlgorithmManager():
         self.rsi = rsi.RSI(self.yData.getData(), date='2015-01-01')
         self.__commonDataframe = pd.DataFrame()
         self.__onlyTradingDataFrame = pd.DataFrame()
+        self.__printableDataFrame = pd.DataFrame()
 
     def prepareStrategies(self):
         self.macd.implementStrategy()
@@ -31,6 +32,12 @@ class AlgorithmManager():
         self.__commonDataframe["RSI_Sell_Position"] = self.rsi.getSellPriceInfo()
         self.__commonDataframe["Bollinger_Buy_Position"] = self.bollinger.getBuyPriceInfo()
         self.__commonDataframe["Bollinger_Sell_Position"] = self.bollinger.getSellPriceInfo()
+
+    def adjustClosingPrice(self):
+        self.__closePrices = self.yData.getData()
+        self.__closePrices = self.__closePrices[["Date", "Close"]]
+        self.__closePrices = self.__closePrices.set_index(pd.DatetimeIndex(self.__closePrices['Date'].values))
+        self.__closePrices = self.__closePrices.drop(["Date"], axis = 1)
 
     def plotStrategy(self):
         #Geçici fonksiyon. İlerde qt veya django ile butonlu strateji bastırma yapısına geçilmeli
@@ -63,9 +70,17 @@ class AlgorithmManager():
 
             if (flag):
                 df.drop(index=index, inplace=True)
-
-        self.__onlyTradingDataFrame = df.copy()
+        self.adjustClosingPrice()
+        merged_df = df.merge(self.__closePrices, left_index=True, right_index=True)
+        self.__onlyTradingDataFrame = merged_df.copy()
         return df
+
+    def printCommonDataFramewithClose(self, rowNumber = 50):
+        self.adjustClosingPrice()
+        self.__printableDataFrame = self.__commonDataframe.copy()
+        self.__printableDataFrame = self.__printableDataFrame.set_index(pd.DatetimeIndex(self.__printableDataFrame["Date"].values))
+        self.__printableDataFrame = self.__printableDataFrame.merge(self.__closePrices, left_index=True, right_index=True)
+        print(self.__printableDataFrame.tail(rowNumber))
 
     def printDataFrame(self , rowNumber = 50):
         print(self.__commonDataframe.tail(rowNumber))
@@ -75,6 +90,9 @@ class AlgorithmManager():
 
     def getCommonDataframe(self):
         return self.__commonDataframe
+
+    def getTradingDf(self):
+        return self.__onlyTradingDataFrame
 
     def getFinalDate(self):
         print(self.yData.getData().tail(1))
