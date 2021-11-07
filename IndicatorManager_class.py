@@ -19,6 +19,7 @@ class IndicatorManager():
         self.__commonDataframe = pd.DataFrame()
         self.__onlyTradingDataFrame = pd.DataFrame()
         self.__printableDataFrame = pd.DataFrame()
+        self.__isReady = 0 #it informs you about strategy is prepared or not
 
     def prepareStrategies(self):
         self.macd.implementStrategy()
@@ -41,6 +42,7 @@ class IndicatorManager():
 
     def plotStrategy(self):
         #Geçici fonksiyon. İlerde qt veya django ile butonlu strateji bastırma yapısına geçilmeli
+        #TODO: bu plot kısmı ilerletilebilir ve PredictionManager'a taşınabilir.
         self.strategyName = input("Enter one of them: \n1-Bollinger\n2-MACD\n3-RSI")
         if (self.strategyName.lower() == "bollinger"):
             self.bollinger.plotStrategy()
@@ -54,7 +56,11 @@ class IndicatorManager():
             self.rsi.plotStrategy()
 
     def findOnlyTradings(self):
-        self.prepareStrategies()
+        if (self.__isReady):
+            pass
+        else:
+            self.prepareStrategies()
+            self.__isReady = 1
 
         df = self.getCommonDataframe().copy()
         df = df.set_index(pd.DatetimeIndex(df['Date'].values))
@@ -75,27 +81,40 @@ class IndicatorManager():
         self.__onlyTradingDataFrame = merged_df.copy()
         return df
 
-    def printCommonDataFramewithClose(self, rowNumber = 50):
+    def preparePrintableDataframe(self):
+        if (self.__isReady):
+            pass
+        else:
+            self.prepareStrategies()
+            self.__isReady = 1
+    
         self.adjustClosingPrice()
         self.__printableDataFrame = self.__commonDataframe.copy()
         self.__printableDataFrame = self.__printableDataFrame.set_index(pd.DatetimeIndex(self.__printableDataFrame["Date"].values))
         self.__printableDataFrame = self.__printableDataFrame.merge(self.__closePrices, left_index=True, right_index=True)
+
+    def printCommonDataFramewithClose(self, rowNumber = 50):
+        self.preparePrintableDataframe()
         print(self.__printableDataFrame.tail(rowNumber))
 
     def printDataFrame(self , rowNumber = 50):
         print(self.__commonDataframe.tail(rowNumber))
 
     def printOnlyTradings(self, rowNumber = 30):
+        self.findOnlyTradings()
         print(self.__onlyTradingDataFrame.tail(rowNumber))
 
     def getCommonDataframe(self):
         return self.__commonDataframe
 
     def getTradingDf(self):
+        self.findOnlyTradings()
         return self.__onlyTradingDataFrame
 
-    def getFinalDate(self):
-        print(self.yData.getData().tail(1))
+    def getPrintableDf(self):
+        self.preparePrintableDataframe()
+        return self.__printableDataFrame
+
 
         
 
