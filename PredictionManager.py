@@ -27,6 +27,9 @@ class PredictionManager:
         self.indicatorManager.printOnlyTradings(rowNumber)
         self.indicatorManager.printCommonDataFramewithClose(1)
 
+    def getTradings(self):
+        return self.indicatorManager.getTradingDf()
+"""
 userInput = input("Market İsmini Girin: ")
 #userInput = 'CANTE.IS'
 predictionManager = PredictionManager(userInput.upper(), '5d', '1m')
@@ -37,8 +40,11 @@ myBackTest = backtest.BackTesting(rsi_backTest, 1000)
 myBackTest.implementBackTest()
 
 print("\n\n\n")
-predictionManager.printTradings()
-
+#predictionManager.printTradings()
+df = predictionManager.getTradings()
+df.reset_index(drop = True, inplace = True)
+print(df.tail(30))
+"""
 # use "period" instead of start/end
         # valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
         # (optional, default is '1mo')
