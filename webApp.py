@@ -20,12 +20,13 @@ def main():
 
     if (bringPredictions):
         if ((predictionInterval != "None") and (stockChoice != "None")):
-            predictionManager = pm.PredictionManager(stockChoice, '3mo', predictionInterval)
+            predictionManager = pm.PredictionManager(stockChoice, '1y', predictionInterval)
             predictionManager.startTrading()
             tempDataframe = predictionManager.getTradings()
             tempDataframe["Date"] = tempDataframe["Date"].astype(str)
             tempDataframe.reset_index(drop = True, inplace = True)
-            st.write(tempDataframe.tail(30))
+            st.write("Son 10 Tahmin:")
+            st.table(tempDataframe.tail(10))
             st.subheader("\nSon tahmin: ")
             st.table(tempDataframe.tail(1))
             
@@ -45,9 +46,9 @@ def main():
                     st.write("İlk yatırım miktarı: ", firstInvestment)
                     st.write("Son gün satış sonrası durum: ", finalResult)
                     if (yuzdelikDurum < 0):
-                        st.write("Yüzdelik Durum: ", yuzdelikDurum, "% zarar")
+                        st.write("Yüzdelik Durum: %", yuzdelikDurum, " zarar")
                     else:
-                        st.write("Yüzdelik Durum: ", yuzdelikDurum, "% kar")
+                        st.write("Yüzdelik Durum: %", yuzdelikDurum, " kar")
                 else:
                     st.write("Lütfen Hisseye Kaç Ay Önce Gireceğinizi Seçin ve Testi Tekrar Başlatın")
     

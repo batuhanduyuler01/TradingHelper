@@ -50,6 +50,6 @@ class BackTesting():
     def getCikisTarihi(self):
         return str(self.cikisTarihi)
     def getResults(self):
-        self.yuzdelikDurum = (self.investmentValue - self.firstInvestmentVal) / (self.firstInvestmentVal)
+        self.yuzdelikDurum = 100 * (self.investmentValue - self.firstInvestmentVal) / (self.firstInvestmentVal)
         return self.firstInvestmentVal, self.investmentValue, self.yuzdelikDurum
     
