@@ -37,6 +37,7 @@ class BackTesting():
             self.investmentValue = self.df['Close'][len(self.df) - 1] * self.stockNumber
             self.stockNumber = 0
 
+    def printResults(self):
         print(f'Markete Giriş Tarihi: {self.girisTarihi}')
         print(f'Markete Girdiğiniz Para Miktari: {self.firstInvestmentVal}\n')
         print(f'Marketten Çıkış Tarihiniz: {self.cikisTarihi}')
@@ -44,5 +45,11 @@ class BackTesting():
         self.yuzdelikDurum = (self.investmentValue - self.firstInvestmentVal) / (self.firstInvestmentVal)
         print(f'Yüzdelik Durum: {self.yuzdelikDurum * 100}%')
 
-        
+    def getGirisTarihi(self):
+        return str(self.girisTarihi)
+    def getCikisTarihi(self):
+        return str(self.cikisTarihi)
+    def getResults(self):
+        self.yuzdelikDurum = (self.investmentValue - self.firstInvestmentVal) / (self.firstInvestmentVal)
+        return self.firstInvestmentVal, self.investmentValue, self.yuzdelikDurum
     
