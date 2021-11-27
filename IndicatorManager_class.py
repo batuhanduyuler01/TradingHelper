@@ -5,6 +5,7 @@ import MACD_class as macd
 import RSI_class as rsi
 import Database_class as db
 import Bollinger_class as bb
+import RSI_with_safe_sell as safeSell
 import yFinance_class as yfHelper
 import numpy as np
 import pandas as pd
@@ -16,6 +17,7 @@ class IndicatorManager():
         self.bollinger = bb.Bollinger(self.yData.getData(), date='2015-01-01')
         self.macd = macd.MACD(self.yData.getData(), date='2015-01-01')
         self.rsi = rsi.RSI(self.yData.getData(), date='2015-01-01')
+        self.safeSellRSI = safeSell.safeCellRSI(self.yData.getData())
         self.__commonDataframe = pd.DataFrame()
         self.__onlyTradingDataFrame = pd.DataFrame()
         self.__printableDataFrame = pd.DataFrame()
@@ -25,6 +27,7 @@ class IndicatorManager():
         self.macd.implementStrategy()
         self.rsi.implementStrategy()
         self.bollinger.implementStrategy()
+        self.safeSellRSI.implementStrategy()
         
         self.__commonDataframe["Date"] = (self.yData.getData())['Date']
         self.__commonDataframe["Macd_Buy_Position"] = self.macd.getBuyPriceInfo()
@@ -33,6 +36,8 @@ class IndicatorManager():
         self.__commonDataframe["RSI_Sell_Position"] = self.rsi.getSellPriceInfo()
         self.__commonDataframe["Bollinger_Buy_Position"] = self.bollinger.getBuyPriceInfo()
         self.__commonDataframe["Bollinger_Sell_Position"] = self.bollinger.getSellPriceInfo()
+        self.__commonDataframe["SelfSell_Buy_Position"] = self.safeSellRSI.getBuyPriceInfo()
+        self.__commonDataframe["SelfSell_Sell_Position"] = self.safeSellRSI.getSellPriceInfo()
 
     def adjustClosingPrice(self):
         self.__closePrices = self.yData.getData()
@@ -114,6 +119,9 @@ class IndicatorManager():
     def getPrintableDf(self):
         self.preparePrintableDataframe()
         return self.__printableDataFrame
+
+    def getSafeSell(self):
+        return self.safeSellRSI
 
 
         

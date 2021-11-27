@@ -22,6 +22,10 @@ class PredictionManager:
         self.algoManager.initializeAlgoManager(self.indicatorManager.getPrintableDf())
         self.algoManager.startRSI()
 
+    def startSafeTrading(self, position_list):
+        self.algoManager.initializeAlgoManager(self.indicatorManager.getPrintableDf())
+        self.algoManager.startSelfRSI(position_list)
+
     def printTradings(self, rowNumber = 30):
         #self.indicatorManager.printCommonDataFramewithClose(rowNumber)
         self.indicatorManager.printOnlyTradings(rowNumber)
