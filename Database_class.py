@@ -30,5 +30,8 @@ class DataBase :
         self.df.to_sql(str(table_name), self.db, if_exists='replace', index = False)
 
     def getTable(self):
+	print("tablo getirildi")
         return self.df
+
+#baro geliştirme 
 
