@@ -123,6 +123,9 @@ class IndicatorManager():
     def getSafeSell(self):
         return self.safeSellRSI
 
+    def getRawData(self):
+        return self.yData
+
 
         
 
