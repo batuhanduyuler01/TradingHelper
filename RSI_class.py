@@ -60,7 +60,7 @@ class RSI:
         self.__obtainRSI()
         rsi = self.data.RSI_14
 
-        for element in range(0,len(rsi)):
+        for element in range(1,len(rsi)):
             if ((rsi[element - 1] > self.lower_band) and (rsi[element] < self.lower_band)):
                 if (self.signal != 1):
                     self.__buy_price.append(self.prices[element])
@@ -107,6 +107,10 @@ class RSI:
         self.__obtainRSI()
         print("--------")
         print(self.data.head(10))
+
+    def getStrategyDF(self):
+        temp_df = pd.DataFrame(list(zip(self.data.Date[1:].to_list(), self.data.Close[1:].to_list(), self.rsi_signal)), columns=["Date", "Close", "Signal"])
+        return temp_df
 
 
 

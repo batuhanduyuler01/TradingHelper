@@ -68,7 +68,7 @@ class MACD :
                     self.__buy_price.append(np.nan)
                     self.__sell_price.append(prices[element])
                     self.signal = -1
-                    self.macd_signal.append(0)
+                    self.macd_signal.append(self.signal)
                 else:
                     self.__buy_price.append(np.nan)
                     self.__sell_price.append(np.nan)

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 class BackTesting():
-    def __init__(self, dataframe, investmentValue = 1000):
+    def __init__(self, dataframe, investmentValue = 1000000):
         self.df = dataframe.copy()
         self.firstInvestmentVal = investmentValue
         self.investmentValue = investmentValue
@@ -15,6 +15,8 @@ class BackTesting():
 
     def implementBackTest(self):
         self.stockNumber = round(self.investmentValue / self.df['Close'][0])
+        #TODO: batuhan.duyuler : position elemanları buy : 1 sell : -1 şeklinde refactor edilecek
+        #TODO: batuhan.duyuler : backtest implementation refactor edilecek
         for i in range(1, len(self.df)):
             if (self.df['position'][i] != 0):
                 if (self.decisionFlag == False):

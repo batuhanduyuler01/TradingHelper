@@ -5,7 +5,7 @@ import backtest_class as backTest
 class UserContext():
     def __init__(self):
         #userInput = input("Market İsmini Girin: ")
-        self.userInput = "CANTE.IS"
+        self.userInput = "AVAX-USD"
         self.period = '1y'
         self.interval = '1d'
 

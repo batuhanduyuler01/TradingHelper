@@ -14,7 +14,7 @@ class safeCellRSI:
         self.data = self.data[self.data.Date > str(date)]
         self.data = self.data.set_index(pd.DatetimeIndex(self.data['Date'].values))
         self.df_RSI = pd.DataFrame()
-        self.lower_band = 15.0
+        self.lower_band = 50.0
         self.upper_band = 85.0
         self.lastBuyPrice = []
 

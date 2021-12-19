@@ -10,9 +10,8 @@ import PredictionManager as pm
 import backtest_class as backTest
 
 
-
-userInput = "CANTE.IS"
+userInput = "SOL1-USD"
 period = '1y'
-interval = '60m'
+interval = '1d'
 myPredictions = pm.PredictionManager(userInput.upper(), period, interval)
 myPredictions.indicatorManager.set_strategy_df_all()
