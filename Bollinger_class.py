@@ -41,7 +41,7 @@ class Bollinger :
 
         self.obtainBB()
         close = self.data.Close
-        for i in range(len(close)):
+        for i in range(1, len(close)):
             if ((close[i-1] > self.__lower_bb[i-1]) and (close[i] < self.__lower_bb[i])):
                 if (self.__signal != 1):
                     self.__buy_price.append(close[i])
@@ -79,6 +79,10 @@ class Bollinger :
         plt.title(' Bollinger Band Stratejisi')
         plt.legend(loc = 'upper left')
         plt.show()
+
+    def getStrategyDF(self):
+        temp_df = pd.DataFrame(list(zip(self.data.Date[1:].to_list(), self.data.Close[1:].to_list(), self.__BB_signal)), columns=["Date", "Close", "Signal"])
+        return temp_df
 
 
                 

@@ -39,6 +39,16 @@ class IndicatorManager():
         self.__commonDataframe["SelfSell_Buy_Position"] = self.safeSellRSI.getBuyPriceInfo()
         self.__commonDataframe["SelfSell_Sell_Position"] = self.safeSellRSI.getSellPriceInfo()
 
+    def set_strategy_df_all(self):
+        self.macd.implementStrategy()
+        self.safeSellRSI.implementStrategy()
+        self.bollinger.implementStrategy()
+        self.__all_dataframe = pd.DataFrame()
+        self.__all_dataframe["MACD"] = self.macd.getStrategyDF().Signal
+        self.__all_dataframe["RSI_Safe"] = self.safeSellRSI.obtain_strategy_df().Signal
+        self.__all_dataframe["BollingBand"] = self.bollinger.getStrategyDF().Signal
+        print(self.__all_dataframe.head(20))
+
     def adjustClosingPrice(self):
         self.__closePrices = self.yData.getData()
         self.__closePrices = self.__closePrices[["Date", "Close"]]

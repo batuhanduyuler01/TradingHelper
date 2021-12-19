@@ -7,15 +7,15 @@ from pandas.core.series import Series
 import yFinance_class as yf
 
 class safeCellRSI:
-    def __init__(self, dataframe, date = '2019-01-01', lookback = 7):
+    def __init__(self, dataframe, date = '2019-01-01', lookback = 7, expectedProfit = 0.1):
         # Initialize Dataframe Parameters
         #self.data = pd.read_csv("../past_work/Veri_Setleri/GARAN.IS.csv")
         self.data = dataframe.copy()
         self.data = self.data[self.data.Date > str(date)]
         self.data = self.data.set_index(pd.DatetimeIndex(self.data['Date'].values))
         self.df_RSI = pd.DataFrame()
-        self.lower_band = 15
-        self.upper_band = 85
+        self.lower_band = 15.0
+        self.upper_band = 85.0
         self.lastBuyPrice = []
 
         # Initialize Strategy Parameters
@@ -23,12 +23,28 @@ class safeCellRSI:
         self.__sell_price = []
         self.rsi_signal = []
         self.signal = 0
-        self.prices = self.data.Close
         self.lookback = lookback
+        self.beklenenKar = expectedProfit
+
     def getSellPriceInfo(self):
         return self.__sell_price
     def getBuyPriceInfo(self):
         return self.__buy_price
+
+    def wait_for_signal(self, buyList, sellList, signalList):
+        buyList.append(np.nan)
+        sellList.append(np.nan)
+        signalList.append(0)
+
+    def fill_buy_signal(self, buyList,buyPrice, sellList, signalList):
+        buyList.append(buyPrice)
+        sellList.append(np.nan)
+        signalList.append(1)
+        
+    def fill_sell_signal(self, buyList, sellList, sellPrice, signalList):
+        buyList.append(np.nan)
+        sellList.append(sellPrice)
+        signalList.append(-1)
 
     def __obtainRSI(self):
         close = self.data.Close #self.prices ile değiştirilebilir ileride
@@ -36,16 +52,18 @@ class safeCellRSI:
         up = []
         down = []
 
-        for element in range(len(ret)):
-            if (ret[element] < 0):
+        for element in range(0, len(ret)):
+            if (ret[element] < float(0)):
                 up.append(0)
                 down.append(ret[element])
-            elif (ret[element] >= 0):
+            elif (ret[element] >= float(0)):
                 up.append(ret[element])
                 down.append(0)
     
         upSeries = pd.Series(up)
         downSeries = pd.Series(down).abs()
+
+        ret = ret.replace(np.nan, 0)
 
         upEwm = upSeries.ewm(com = self.lookback - 1, adjust = False).mean()
         downEwm = downSeries.ewm(com = self.lookback - 1, adjust = False).mean()
@@ -56,83 +74,74 @@ class safeCellRSI:
             #bu nedenle ilk indeksi dropluyoruz
         close = close.drop(index = close.index[0])
         temp_df = pd.DataFrame(rsi).rename(columns={0 : 'rsi'}).set_index(close.index)
-        self.data['RSI_14'] = temp_df[3:]
+        self.data['RSI_14'] = temp_df[2:]
 
     def implementStrategy(self):
         self.__obtainRSI()
         rsi = self.data.RSI_14
+        prices = self.data.Close
 
-        for element in range(0,len(rsi)):
+        for element in range(1, len(rsi)):
             if ((rsi[element - 1] > self.lower_band) and (rsi[element] < self.lower_band)):
+                #eğer rsi değeri 30'un üstünden 30'un altına geçiş yaptıysa
+                #alım yapmak istiyoruz
+                #ancak iki kere alım yapamayacağımızdan sinyal kontrolü yap.
                 if (self.signal != 1):
-                    self.__buy_price.append(self.prices[element])
-                    self.__sell_price.append(np.nan)
+                    self.fill_buy_signal(self.__buy_price, prices[element], self.__sell_price, self.rsi_signal)
                     self.signal = 1
-                    self.rsi_signal.append(self.signal)
-                    self.lastBuyPrice.append(self.data["Close"][element])
+                    self.lastBuyPrice.append(prices[element])
                 else:
-                        if (self.data["Close"][element - 1] > self.data["Close"][element]):
-                            if (self.data["Close"][element] > self.lastBuyPrice[-1]):
-                                lossPortion = ((self.data["Close"][element] - self.lastBuyPrice[-1]) / (self.lastBuyPrice[-1]))
-                                if (lossPortion > 0.05):
-                                    self.__buy_price.append(np.nan)
-                                    self.__sell_price.append(self.prices[element])
-                                    print("alımdayken girdi.")
-                                    self.signal(-1)
-                                    self.rsi_signal.append(self.signal)
-                                else:
-                                    self.__buy_price.append(np.nan)
-                                    self.__sell_price.append(np.nan)
-                                    self.rsi_signal.append(0)
-                            else:
-                                self.__buy_price.append(np.nan)
-                                self.__sell_price.append(np.nan)
-                                self.rsi_signal.append(0)
-                        else:
-                            self.__buy_price.append(np.nan)
-                            self.__sell_price.append(np.nan)
-                            self.rsi_signal.append(0)
-
-            elif ((rsi[element - 1] < self.upper_band) and (rsi[element] > self.upper_band)):
-                if (self.signal != -1):
-                    self.__buy_price.append(np.nan)
-                    self.__sell_price.append(self.prices[element])
-                    self.signal = -1
-                    self.rsi_signal.append(self.signal)
-                else:
-                    print("girdi")
-                    print(self.signal)
-                    self.__buy_price.append(np.nan)
-                    self.__sell_price.append(np.nan)
-                    self.rsi_signal.append(0)
-            else:
-                if (self.signal == 1):
-                    if(self.data["Close"][element - 1] > self.data["Close"][element]):
-                        if (self.data["Close"][element] > self.lastBuyPrice[-1]):
-                            lossPortion = ((self.data["Close"][element] - self.lastBuyPrice[-1]) / (self.lastBuyPrice[-1]))
-                            if (lossPortion > 0.05):
-                                self.__buy_price.append(np.nan)
-                                self.__sell_price.append(self.prices[element])
+                    #RSI alım sinyali verdi ama zaten alım yapmışız
+                    #fakat karımız %5 üzerindeyse satış yapmak istiyoruz.
+                    #o yüzden ilk önce fiyat düşüşte mi ona bakıyoruz
+                    if (prices[element - 1] > prices[element]):
+                        #eğer düşüşteyse aldığımız fiyattan yüksek mi
+                        #onu kontrol etmeliyiz.
+                        if (prices[element] > self.lastBuyPrice[-1]):
+                            #eğer öyleyse karımızı hesaplamalıyız
+                            lossPortion = (prices[element] - self.lastBuyPrice[-1]) / self.lastBuyPrice[-1]
+                            if (lossPortion > self.beklenenKar ):
+                                print(lossPortion)
+                                self.fill_sell_signal(self.__buy_price, self.__sell_price, prices[element], self.rsi_signal)
                                 self.signal = -1
-                                print("0 ken girdi")
-                                self.rsi_signal.append(self.signal)
                             else:
-                                self.__buy_price.append(np.nan)
-                                self.__sell_price.append(np.nan)
-                                self.rsi_signal.append(0)
+                                self.wait_for_signal(self.__buy_price, self.__sell_price, self.rsi_signal)
                         else:
-                            self.__buy_price.append(np.nan)
-                            self.__sell_price.append(np.nan)
-                            self.rsi_signal.append(0)
+                            self.wait_for_signal(self.__buy_price, self.__sell_price, self.rsi_signal)
                     else:
-                        self.__buy_price.append(np.nan)
-                        self.__sell_price.append(np.nan)
-                        self.rsi_signal.append(0)
+                        self.wait_for_signal(self.__buy_price, self.__sell_price, self.rsi_signal)
+                    
+            elif((rsi[element - 1] < self.upper_band) and (rsi[element] > self.upper_band)):
+                #eğer rsi değeri 70'in altındaysa ve 70'in üstüne geçiş yaptıysa
+                #satış yapmak istiyoruz
+                #ancak iki kere satış yapamacağımızdan sinyal kontrolü yap
+                if (self.signal != -1):
+                    self.fill_sell_signal(self.__buy_price, self.__sell_price, prices[element], self.rsi_signal)
+                    self.signal = -1
                 else:
-                    self.__buy_price.append(np.nan)
-                    self.__sell_price.append(np.nan)
-                    self.rsi_signal.append(0)
-                #strateji buraya gelecek
+                    self.wait_for_signal(self.__buy_price, self.__sell_price, self.rsi_signal)
+                #satış pozisyonunda bir daha satış yapamayacağımızdan burayı pass geçiyoruz.   
+            else:
+                #eğer bu durumlardan biri yaşanmadıysa, karı kontrol edebiliriz.
+                #ilk olarak sinyal alım pozisyonunda mı ona bakıyoruz.
+                if (self.signal == 1):
+                    if (prices[element - 1] > prices[element]):
+                        #fiyat düşüştüyse tespit ettik.
+                        if (prices[element] > self.lastBuyPrice[-1]):
+                            #karda olup olmadığımızı kontrol ettik
+                            lossPortion = (prices[element] - self.lastBuyPrice[-1]) / self.lastBuyPrice[-1]
+                            if (lossPortion > self.beklenenKar):
+                                print(lossPortion)
+                                self.fill_sell_signal(self.__buy_price, self.__sell_price, prices[element], self.rsi_signal)
+                                self.signal = -1
+                            else:
+                                self.wait_for_signal(self.__buy_price, self.__sell_price, self.rsi_signal)
+                        else:
+                            self.wait_for_signal(self.__buy_price, self.__sell_price, self.rsi_signal)
+                    else:
+                        self.wait_for_signal(self.__buy_price, self.__sell_price, self.rsi_signal)
+                else:
+                    self.wait_for_signal(self.__buy_price, self.__sell_price, self.rsi_signal)
     
     def plotStrategy(self):
 
@@ -150,6 +159,11 @@ class safeCellRSI:
         ax2.axhline(70, linestyle = '--', linewidth = 1.5, color = 'grey')
         plt.show()
     
+    
+    def obtain_strategy_df(self):
+        temp_df = pd.DataFrame(list(zip(self.data.Date[1:].to_list(), self.data.Close[1:].to_list(), self.rsi_signal)), columns = ["Date", "Close", "Signal"])
+        return temp_df
+
     def getPositionList(self):
         return self.rsi_signal
     
@@ -159,23 +173,6 @@ class safeCellRSI:
         print(self.data.tail(10))
 
 
-
-"""
-yData = yf.yFinance('GARAN.IS', '1y', '1d')
-safeCell = safeCellRSI(yData.getData())
-
-safeCell.implementStrategy()
-position_of_rsi_df = safeCell.data[["Date", "Close"]]
-position_of_rsi_df.reset_index(drop = True, inplace = True)
-
-if (len(safeCell.rsi_signal) == len(position_of_rsi_df)):
-    print("column match is ok.")
-    positionDF = pd.DataFrame(safeCell.rsi_signal, columns=["position"])
-    position_of_rsi_df = pd.concat([position_of_rsi_df, positionDF], axis = 1)   
-
-print(position_of_rsi_df.position.unique())
-print(position_of_rsi_df.head(30))
-"""
 
 
 

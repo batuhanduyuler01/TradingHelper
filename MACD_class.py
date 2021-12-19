@@ -100,6 +100,11 @@ class MACD :
         plt.legend(loc = 'lower right')
         plt.show()
 
+    def getStrategyDF(self):
+        temp_df = pd.DataFrame(list(zip(self.data.Date[1:].to_list(), self.data.Close[1:].to_list(), self.macd_signal[1:])), columns=["Date", "Close", "Signal"])
+        return temp_df
+
+
 
 
         
