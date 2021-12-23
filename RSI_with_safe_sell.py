@@ -83,7 +83,7 @@ class safeCellRSI:
 
         for element in range(1, len(rsi)):
             if ((rsi[element - 1] > self.lower_band) and (rsi[element] < self.lower_band)):
-                #eğer rsi değeri 30'un üstünden 30'un altına geçiş yaptıysa
+                #eğer rsi değeri 50'un üstünden 50'un altına geçiş yaptıysa
                 #alım yapmak istiyoruz
                 #ancak iki kere alım yapamayacağımızdan sinyal kontrolü yap.
                 if (self.signal != 1):

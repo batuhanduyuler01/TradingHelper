@@ -51,8 +51,16 @@ class IndicatorManager():
         self.__all_dataframe["BollingBand"] = self.bollinger.getStrategyDF().Signal
         self.__all_dataframe["RSI"] = self.rsi.getStrategyDF().Signal
         self.__all_dataframe["Close"] = self.safeSellRSI.obtain_strategy_df().Close
-        print(self.__all_dataframe.head(50))
-        print(self.__all_dataframe.tail(60))
+        # print(self.__all_dataframe.head(50))
+        # print(self.__all_dataframe.tail(60))
+
+    def get_strategy_df_all(self):
+        if (self.__isReady):
+            pass
+        else:
+            self.set_strategy_df_all()
+            self.__isReady = 1
+        return self.__all_dataframe
 
     def adjustClosingPrice(self):
         self.__closePrices = self.yData.getData()
@@ -100,7 +108,30 @@ class IndicatorManager():
         merged_df = df.merge(self.__closePrices, left_index=True, right_index=True)
         self.__onlyTradingDataFrame = merged_df.copy()
         return df
+    def findOnlyTradingsNew(self, isNew = True):
+        if (self.__isReady):
+            pass
+        else:
+            self.set_strategy_df_all()
+            self.__isReady = 1
 
+        df = self.__all_dataframe.copy()
+        cList = self.__all_dataframe.columns.to_list()
+        sList = cList[1:len(cList)-1]
+
+        for index, row in df.iterrows():
+            flag = True
+            for column in sList:
+                if (row[column] != 0):
+                    flag = False
+                else:
+                    pass
+            
+            if (flag):
+                df.drop(index = index, inplace = True)
+        
+        return df
+            
     def preparePrintableDataframe(self):
         if (self.__isReady):
             pass
