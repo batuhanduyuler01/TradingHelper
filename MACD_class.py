@@ -68,7 +68,7 @@ class MACD :
                     self.__buy_price.append(np.nan)
                     self.__sell_price.append(prices[element])
                     self.signal = -1
-                    self.macd_signal.append(0)
+                    self.macd_signal.append(self.signal)
                 else:
                     self.__buy_price.append(np.nan)
                     self.__sell_price.append(np.nan)
@@ -99,6 +99,11 @@ class MACD :
                 ax2.bar(self.macd_df.index[element], self.macd_df['hist'][element], color = '#26a69a')
         plt.legend(loc = 'lower right')
         plt.show()
+
+    def getStrategyDF(self):
+        temp_df = pd.DataFrame(list(zip(self.data.Date[1:].to_list(), self.data.Close[1:].to_list(), self.macd_signal[1:])), columns=["Date", "Close", "Signal"])
+        return temp_df
+
 
 
 

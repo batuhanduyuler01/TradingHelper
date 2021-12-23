@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 class BackTesting():
-    def __init__(self, dataframe, investmentValue = 1000):
+    def __init__(self, dataframe, investmentValue = 1000000):
         self.df = dataframe.copy()
         self.firstInvestmentVal = investmentValue
         self.investmentValue = investmentValue
@@ -13,8 +13,32 @@ class BackTesting():
         self.cikisTarihi = str(self.df['Date'][len(self.df) - 1])
 
 
+    def implementBackTestNew(self):
+        self.stockNumber = round(self.investmentValue / self.df['Close'][0])
+        for i in range(1, len(self.df)):
+            if (self.df.iloc[i,1] != 0):
+                if (self.decisionFlag == False):
+                    if (self.df.iloc[i,1] == 1):
+                        self.decisionFlag = True
+                    elif (self.df.iloc[i,1] == -1):
+                        self.decisionFlag = True
+                        self.investmentValue = self.df["Close"][i] * self.stockNumber
+                else:
+                    if (self.df.iloc[i,1] == 1):
+                        self.stockNumber = round(self.investmentValue / self.df["Close"][i])
+                        self.investmentValue = 0
+                    elif (self.df.iloc[i,1] == -1):
+                        self.investmentValue = self.df["Close"][i] * self.stockNumber
+                        self.stockNumber = 0
+
+        if (self.investmentValue == 0):
+            self.investmentValue = self.df["Close"][len(self.df) - 1] * self.stockNumber
+
+
     def implementBackTest(self):
         self.stockNumber = round(self.investmentValue / self.df['Close'][0])
+        #TODO: batuhan.duyuler : position elemanları buy : 1 sell : -1 şeklinde refactor edilecek
+        #TODO: batuhan.duyuler : backtest implementation refactor
         for i in range(1, len(self.df)):
             if (self.df['position'][i] != 0):
                 if (self.decisionFlag == False):
