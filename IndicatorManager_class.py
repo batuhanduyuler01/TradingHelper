@@ -117,17 +117,22 @@ class IndicatorManager():
 
         df = self.__all_dataframe.copy()
         cList = self.__all_dataframe.columns.to_list()
+        #Date ve Close olmayan değerler setupList oluşturuyor.
+        #Bu değerleri strateji içerisinde kullanmayacağımızdan böyle yapıyoruz.
         sList = cList[1:len(cList)-1]
 
         for index, row in df.iterrows():
             flag = True
             for column in sList:
+                #Eğer herhangi bir strateji outputu 0'dan farklıysa yani:
+                #Al - Sat emri verildiyse droplamamak için flag false yapıyoruz.
                 if (row[column] != 0):
                     flag = False
                 else:
                     pass
             
             if (flag):
+                #Eğer flag true ise yani al - sat emri verilmediyse dropluyoruz.
                 df.drop(index = index, inplace = True)
         
         return df

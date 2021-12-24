@@ -1,6 +1,7 @@
 import PredictionManager as pm #this import will be replaced with user context
 import streamlit as st
 import backtest_class as backtest
+import algorithm_manager_class as algoManager
 import pandas as pd
 
 # use "period" instead of start/end
@@ -126,6 +127,22 @@ def main():
                     st.write("Yüzdelik Durum: %", yuzdelikDurum, " kar")
     else:
         st.write("Lutfen Interval - Period - Kagit İsmi Giriniz")
+
+    st.subheader("Seçili kağıt ve aralıkta en iyi stratejiyi gör (premium :D )")
+    strategy = st.checkbox("Taramayı Başlat")
+    if ((predictionInterval != "None") and (stockChoice != "None") and (predictionPeriod != "None")):
+        if (strategy):
+            myAlgoManager = algoManager.AlgoManager()
+            myAlgoManager.initializeAlgoManager(stockChoice, predictionPeriod, predictionInterval)
+            myAlgoManager.startProcess()
+            strategyName, bestProfit = myAlgoManager.getBestStrategy()
+
+            st.write("En iyi strateji: ", strategyName)
+            if (bestProfit < 0):
+                st.write("Yuzdelik Durum: %", bestProfit, "zarar")
+            else:
+                st.write("Yuzdelik Durum: %", bestProfit, "kar")
+
 
 
     
