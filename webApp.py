@@ -40,6 +40,7 @@ def main():
             onlyTradings = onlyTradings.replace(1, 'AL')
             onlyTradings = onlyTradings.replace(-1, 'SAT')
             onlyTradings = onlyTradings.replace(0 , '-')
+            #TODO: batuhan.duyuler: find the selected strategies final prediction.
 
             
             if (len(onlyTradings) > 9):
