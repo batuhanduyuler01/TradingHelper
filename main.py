@@ -8,6 +8,7 @@
 from pandas.core.indexing import maybe_convert_ix
 import PredictionManager as pm
 import backtest_class as backTest
+import algorithm_manager_class as algoManager
 
 # use "period" instead of start/end
         # valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
@@ -39,4 +40,8 @@ bollinger_df = genelVeri[["Date", "BollingBand", "Close"]]
 myBackTest = backTest.BackTesting(rsi_safe_df)
 myBackTest.implementBackTestNew()
 myBackTest.printResults()
+
+myAlgoManager = algoManager.AlgoManager()
+myAlgoManager.initializeAlgoManager(userInput, period, interval)
+myAlgoManager.startProcess()
 

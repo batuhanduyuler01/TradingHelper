@@ -1,58 +1,53 @@
 import numpy as np
 import pandas as pd
+import PredictionManager as pm
+import backtest_class as backtestManager
 
 class AlgoManager():
     def __init__(self):
         print("Algorithm Manager has invoke.")
-        self.flag = True
-        self.position_list_safe_rsi = []
 
-    def initializeAlgoManager(self, dataframe):
-        self.df = dataframe.copy()
-        self.position_rsi_list = []
-        self.position_self_rsi_list = []
+    def initializeAlgoManager(self, stockChoice, predictionPeriod, predictionInterval) :
+        self.myPredictions = pm.PredictionManager(stockChoice, predictionPeriod, predictionInterval)
+        self.genelVeri = self.myPredictions.indicatorManager.get_strategy_df_all()
+
+    def startProcess(self):
+        #TODO: batuhan.duyuler: Burası for dönecek. Tek tek veri seti ismi ayıklamaktansa 
+        #TODO: batuhan.duyuler: Date baş, Close son ve i. kolon şeklinde backteste sokulacak.
+        rsi_df = self.genelVeri[["Date", "RSI", "Close"]]
+        macd_df = self.genelVeri[["Date", "MACD", "Close"]]
+        rsi_safe_df = self.genelVeri[["Date", "RSI_Safe", "Close"]]
+        bollinger_df = self.genelVeri[["Date", "BollingBand", "Close"]]
+
+        self.karList = []
+        myBackTest = backtestManager.BackTesting(rsi_safe_df)
+        myBackTest.implementBackTestNew()
+        self.karList.append(["RSI Safe Sell", myBackTest.yuzdelikDurum])
+
+        myBackTest = backtestManager.BackTesting(macd_df)
+        myBackTest.implementBackTestNew()
+        self.karList.append(["MACD", myBackTest.yuzdelikDurum])
+
+        myBackTest = backtestManager.BackTesting(rsi_df)
+        myBackTest.implementBackTestNew()
+        self.karList.append(["RSI Düz (30-70)", myBackTest.yuzdelikDurum])
+
+        myBackTest = backtestManager.BackTesting(bollinger_df)
+        myBackTest.implementBackTestNew()
+        self.karList.append(["Bolling Band ", myBackTest.yuzdelikDurum])
+
+        self.karList = sorted(self.karList, key = lambda x : x[1])
+        print(f"En Başarılı Algoritma: {self.karList[-1][0]}")
+        print(f"yuzdelik durum: %{self.karList[-1][1] * 100}")
+
+    def getBestStrategy(self):
+        bestStrategy = self.karList[-1][0]
+        bestProfit = self.karList[-1][1] * 100
+        return bestStrategy, bestProfit
        
 
-    def startMacd(self):
-        self.macd_df = self.df[["Date", "Macd_Buy_Position", "Macd_Sell_Position"]]
+        
+        
 
-    def startRSI(self):
-        self.__position_of_rsi_df = self.df[["Date", "Close"]]
-        self.__position_of_rsi_df.reset_index(drop = True, inplace = True)
-
-        for indeks, row in  self.df.iterrows() :
-            if (row["RSI_Buy_Position"] > 0.0):
-                self.position_rsi_list.append(-1)
-            elif  (row["RSI_Sell_Position"] > 0.0):
-                self.position_rsi_list.append(1)
-            else:
-                self.position_rsi_list.append(0)
-
-    def startSelfRSI(self, position_list):
-        self.__position_of_safe_rsi_df = self.df[["Date", "Close"]]
-        self.__position_of_safe_rsi_df.reset_index(drop = True, inplace = True)
-
-        self.position_list_safe_rsi = position_list
-        print(position_list)
-        if (len(self.position_list_safe_rsi) == len(self.__position_of_safe_rsi_df)):
-            print('column match is ok.\nbuy:-1\nsell:1')
-            print('Using Algorithm: Self RSI')
-            positionDF = pd.DataFrame(self.position_list_safe_rsi, columns=["position"])
-            self.__position_of_safe_rsi_df = pd.concat([self.__position_of_safe_rsi_df, positionDF], axis = 1)     
-
-    def useSafeSell(self, dataframe):
-        pass    
-
-    def getOnlyRsiData(self):
-        return self.__position_of_rsi_df
-
-    def getOnlySelfRsiData(self):
-        return self.__position_of_safe_rsi_df
-
-    def set_safe_rsi_position_list(self, position_list):
-        self.position_list_safe_rsi = position_list
-
-    def get_safe_rsi_position_list(self):
-        return self.position_list_safe_rsi
 
 

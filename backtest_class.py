@@ -34,6 +34,8 @@ class BackTesting():
         if (self.investmentValue == 0):
             self.investmentValue = self.df["Close"][len(self.df) - 1] * self.stockNumber
 
+        self.yuzdelikDurum = (self.investmentValue - self.firstInvestmentVal) / (self.firstInvestmentVal)
+
 
     def implementBackTest(self):
         self.stockNumber = round(self.investmentValue / self.df['Close'][0])
