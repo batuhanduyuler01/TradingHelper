@@ -9,6 +9,7 @@ from pandas.core.indexing import maybe_convert_ix
 import PredictionManager as pm
 import backtest_class as backTest
 import algorithm_manager_class as algoManager
+import e_mail_report.e_mail_module as mailConsumer
 
 # use "period" instead of start/end
         # valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
@@ -44,4 +45,10 @@ myBackTest.printResults()
 myAlgoManager = algoManager.AlgoManager()
 myAlgoManager.initializeAlgoManager(userInput, period, interval)
 myAlgoManager.startProcess()
+
+newMail = mailConsumer.eMailSender()
+receiverAddress = "batuhanduyuler@gmail.com"
+# newMail.send_mail(receiverAddress, "Selamun Aleykum Kardes, Bu Mail bir test mailidir.")
+htmlMsg = "Selamlar !\n"
+newMail.send_mail_with_html_buffer(receiverAddress, htmlMsg)
 
