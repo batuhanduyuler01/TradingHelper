@@ -6,9 +6,9 @@
 
 
 from pandas.core.indexing import maybe_convert_ix
-import PredictionManager as pm
-import backtest_class as backTest
-import algorithm_manager_class as algoManager
+import managers.PredictionManager as pm
+import helpers.backtest_class as backTest
+import managers.algorithm_manager_class as algoManager
 import e_mail_report.e_mail_module as mailConsumer
 
 # use "period" instead of start/end
