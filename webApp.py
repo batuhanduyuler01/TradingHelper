@@ -143,7 +143,7 @@ def main():
                 st.write("Yuzdelik Durum: %", bestProfit, "zarar")
             else:
                 st.write("Yuzdelik Durum: %", bestProfit, "kar")
-
+                st.write("BaranDenizDeneme")
 
 
     
