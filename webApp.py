@@ -1,7 +1,7 @@
-import PredictionManager as pm #this import will be replaced with user context
+import managers.PredictionManager as pm #this import will be replaced with user context
 import streamlit as st
-import backtest_class as backtest
-import algorithm_manager_class as algoManager
+import helpers.backtest_class as backtest
+import managers.algorithm_manager_class as algoManager
 import pandas as pd
 
 # use "period" instead of start/end

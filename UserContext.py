@@ -1,6 +1,6 @@
 from pandas.core.indexing import maybe_convert_ix
-import PredictionManager as pm
-import backtest_class as backTest
+import managers.PredictionManager as pm
+import helpers.backtest_class as backTest
 
 class UserContext():
     def __init__(self):
