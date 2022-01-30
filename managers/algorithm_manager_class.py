@@ -22,6 +22,7 @@ class AlgoManager():
         macd_df = self.genelVeri[["Date", "MACD", "Close"]]
         rsi_safe_df = self.genelVeri[["Date", "RSI_Safe", "Close"]]
         bollinger_df = self.genelVeri[["Date", "BollingBand", "Close"]]
+        stochastic_df = self.genelVeri[["Date","Stochastic", "Close"]]
 
         self.karList = []
         myBackTest = backtestManager.BackTesting(rsi_safe_df)
@@ -39,6 +40,11 @@ class AlgoManager():
         myBackTest = backtestManager.BackTesting(bollinger_df)
         myBackTest.implementBackTestNew()
         self.karList.append(["Bolling Band ", myBackTest.yuzdelikDurum])
+
+        myBackTest = backtestManager.BackTesting(stochastic_df)
+        myBackTest.implementBackTestNew()
+        self.karList.append(["Stochastic ", myBackTest.yuzdelikDurum])
+
 
         self.karList = sorted(self.karList, key = lambda x : x[1])
         print(f"En Başarılı Algoritma: {self.karList[-1][0]}")
