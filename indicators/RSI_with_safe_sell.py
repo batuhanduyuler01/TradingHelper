@@ -144,19 +144,25 @@ class safeCellRSI:
     
     def plotStrategy(self):
 
-        self.implementStrategy()
+        if (len(self.__buy_price) != 0):
+            pass
+        else: 
+            self.implementStrategy()
 
-        ax1 = plt.subplot2grid((15,1), (0,0), rowspan = 8, colspan = 1)
-        ax2 = plt.subplot2grid((15,1), (10,0), rowspan = 8, colspan = 1)
-        
+        fig = plt.figure()
+        ax1 = plt.subplot2grid((15,1), (0,0), rowspan = 8, colspan = 1, fig= fig)        
         ax1.plot(self.data.Close, linewidth = 2.5, color = 'skyblue', label = 'Kağıt')
-        ax1.plot(self.data.index, self.__buy_price, marker = '^', markersize = 10, color = 'green', label = 'AL')
-        ax1.plot(self.data.index, self.__sell_price, marker = 'v', markersize = 10, color = 'r', label = 'SAT')
-        ax1.set_title('RSI Indikatörü')
+        ax1.plot(self.data.index[1:], self.__buy_price, marker = '^', markersize = 4, color = 'green', label = 'AL')
+        ax1.plot(self.data.index[1:], self.__sell_price, marker = 'v', markersize = 4, color = 'r', label = 'SAT')
+        ax1.set_title('RSI Safe Sell Indikatörü')
+
+
+        ax2 = plt.subplot2grid((15,1), (10,0), rowspan = 8, colspan = 1, fig= fig)
         ax2.plot(self.data['RSI_14'], color = 'orange', linewidth = 2.5)
         ax2.axhline(30, linestyle = '--', linewidth = 1.5, color = 'grey')
         ax2.axhline(70, linestyle = '--', linewidth = 1.5, color = 'grey')
-        plt.show()
+
+        return fig
     
     
     def obtain_strategy_df(self):
