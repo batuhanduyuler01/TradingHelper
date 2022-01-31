@@ -21,9 +21,9 @@ import e_mail_report.e_mail_module as mailConsumer
         # (optional, default is '1d')
         #interval = "1m",
 
-userInput = "ALGO-USD"
-period = '1d'
-interval = '1m'
+userInput = "GARAN.IS"
+period = '1mo'
+interval = '1h'
 myPredictions = pm.PredictionManager(userInput.upper(), period, interval)
 
 onlyTradings = myPredictions.indicatorManager.findOnlyTradingsNew(True)
@@ -51,5 +51,5 @@ print(onlyTradings.head(50))
 # htmlMsg = "Selamlar !\n"
 # newMail.send_mail_with_html_buffer(receiverAddress, htmlMsg)
 
-myPredictions.indicatorManager.bollinger.plotStrategy()
+# myPredictions.indicatorManager.bollinger.plotStrategy()
 

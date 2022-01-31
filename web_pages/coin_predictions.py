@@ -36,13 +36,13 @@ def app():
         secondButton = buttonCol2.button("Son 20 Tahmin")
         thirdButton = buttonCol3.button("Tüm Tahminler")
 
-        if ((predictionInterval != "None") and (stockChoice != "None" or title != "coin ismi girin...") and (predictionPeriod != "None")):
+        if ((predictionInterval != "None") and (stockChoice != "None" or (title != "coin ismi girin..." and len(title) > 2)) and (predictionPeriod != "None")):
 
             if (stockChoice != "None"):
                 finalValueManager = pm.PredictionManager(stockChoice, "1d", "1m")
                 predictionManager = pm.PredictionManager(stockChoice, predictionPeriod, predictionInterval)
             
-            if (title != "coin ismi girin..."):
+            if ((title != "coin ismi girin...") and (len(title) > 3)):
                 finalValueManager = pm.PredictionManager(title.upper(), "1d", "1m")
                 predictionManager = pm.PredictionManager(title.upper(), predictionPeriod, predictionInterval)
 
@@ -92,7 +92,7 @@ def app():
 
     st.subheader("Seçili kağıt ve aralıkta en iyi stratejiyi gör (premium :D )")
     strategy = st.checkbox("Taramayı Başlat")
-    if ((predictionInterval != "None") and (stockChoice != "None" or title != "coin ismi girin...") and (predictionPeriod != "None")):
+    if ((predictionInterval != "None") and (stockChoice != "None" or (title != "coin ismi girin..." and len(title) > 2)) and (predictionPeriod != "None")):
         if (strategy):
             myAlgoManager = algoManager.AlgoManager()
             myAlgoManager.initializeAlgoManager(stockChoice, predictionPeriod, predictionInterval)
@@ -112,7 +112,7 @@ def app():
         bollingerBackTest = st.checkbox("Bollinger Band")
         onlyRSIBackTest = st.checkbox("RSI")
         
-        if ((predictionInterval != "None") and (stockChoice != "None" or title != "coin ismi girin...") and (predictionPeriod != "None")):
+        if ((predictionInterval != "None") and (stockChoice != "None" or (title != "coin ismi girin..." and len(title) > 2)) and (predictionPeriod != "None")):
                 genelVeri = predictionManager.indicatorManager.get_strategy_df_all()
 
                 if (rsiSafeBackTest):
@@ -174,7 +174,7 @@ def app():
     graphCol1, graphCol2 = st.columns((10,1))
     with st.sidebar.expander("Grafik Analizi"):
         grafikSecenekleri = st.selectbox("Algo: ", algoList)
-        if ((predictionInterval != "None") and (stockChoice != "None" or title != "coin ismi girin...") and (predictionPeriod != "None")):
+        if ((predictionInterval != "None") and (stockChoice != "None" or (title != "coin ismi girin..." and len(title) > 2)) and (predictionPeriod != "None")):
             # pManager = pm.PredictionManager(stockChoice, predictionPeriod, predictionInterval)
             if (grafikSecenekleri == "RSI"):                        
                 fig = predictionManager.indicatorManager.rsi.plotStrategy()
