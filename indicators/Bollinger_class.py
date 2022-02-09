@@ -68,17 +68,22 @@ class Bollinger :
                 self.__BB_signal.append(0)
 
     def plotStrategy(self):
-        self.implementStrategy()
+        if (len(self.__buy_price) != 0):
+            pass
+        else:
+            self.implementStrategy()
 
+        fig, ax = plt.subplots()
         self.data['Close'].plot(label = 'KAPANIŞ', alpha = 0.3)
         self.data['upper_bb'].plot(label = 'UPPER BB', linestyle = '--', linewidth = 1, color = 'black')
         self.data[f'sma_{self.window}'].plot(label = 'MIDDLE BB', linestyle = '--', linewidth = 1.2, color = 'grey')
         self.data['lower_bb'].plot(label = 'LOWER BB', linestyle = '--', linewidth = 1, color = 'black')
-        plt.scatter(self.data.index, self.__buy_price, marker = '^', color = 'green', label = 'AL', s = 200)
-        plt.scatter(self.data.index, self.__sell_price, marker = 'v', color = 'red', label = 'SAT', s = 200)
-        plt.title(' Bollinger Band Stratejisi')
-        plt.legend(loc = 'upper left')
-        plt.show()
+        ax.scatter(self.data.index[1:], self.__buy_price, marker = '^', color = 'green', label = 'AL', s = 200)
+        ax.scatter(self.data.index[1:], self.__sell_price, marker = 'v', color = 'red', label = 'SAT', s = 200)
+        ax.set_title(' Bollinger Band Stratejisi')
+        # ax.set_legend(loc = 'upper left')
+        # plt.show()
+        return fig
 
     def getStrategyDF(self):
         temp_df = pd.DataFrame(list(zip(self.data.Date[1:].to_list(), self.data.Close[1:].to_list(), self.__BB_signal)), columns=["Date", "Close", "Signal"])

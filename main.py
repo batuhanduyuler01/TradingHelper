@@ -21,34 +21,35 @@ import e_mail_report.e_mail_module as mailConsumer
         # (optional, default is '1d')
         #interval = "1m",
 
-userInput = "ASELS.IS"
-period = '3mo'
-interval = '1d'
+userInput = "GARAN.IS"
+period = '1mo'
+interval = '1h'
 myPredictions = pm.PredictionManager(userInput.upper(), period, interval)
-
 
 onlyTradings = myPredictions.indicatorManager.findOnlyTradingsNew(True)
 print(onlyTradings.head(50))
 
-#TODO: batuhan.duyuler: bu veri seti ayrımlarını nerede yapmalıyız karar ver
-genelVeri = myPredictions.indicatorManager.get_strategy_df_all()
+# #TODO: batuhan.duyuler: bu veri seti ayrımlarını nerede yapmalıyız karar ver
+# genelVeri = myPredictions.indicatorManager.get_strategy_df_all()
 
-rsi_df = genelVeri[["Date", "RSI", "Close"]]
-macd_df = genelVeri[["Date", "MACD", "Close"]]
-rsi_safe_df = genelVeri[["Date", "RSI_Safe", "Close"]]
-bollinger_df = genelVeri[["Date", "BollingBand", "Close"]]
+# rsi_df = genelVeri[["Date", "RSI", "Close"]]
+# macd_df = genelVeri[["Date", "MACD", "Close"]]
+# rsi_safe_df = genelVeri[["Date", "RSI_Safe", "Close"]]
+# bollinger_df = genelVeri[["Date", "BollingBand", "Close"]]
 
-myBackTest = backTest.BackTesting(rsi_safe_df)
-myBackTest.implementBackTestNew()
-myBackTest.printResults()
+# myBackTest = backTest.BackTesting(rsi_safe_df)
+# myBackTest.implementBackTestNew()
+# myBackTest.printResults()
 
-myAlgoManager = algoManager.AlgoManager()
-myAlgoManager.initializeAlgoManager(userInput, period, interval)
-myAlgoManager.startProcess()
+# myAlgoManager = algoManager.AlgoManager()
+# myAlgoManager.initializeAlgoManager(userInput, period, interval)
+# myAlgoManager.startProcess()
 
-newMail = mailConsumer.eMailSender()
-receiverAddress = "batuhanduyuler@gmail.com"
-# newMail.send_mail(receiverAddress, "Selamun Aleykum Kardes, Bu Mail bir test mailidir.")
-htmlMsg = "Selamlar !\n"
-newMail.send_mail_with_html_buffer(receiverAddress, htmlMsg)
+# newMail = mailConsumer.eMailSender()
+# receiverAddress = "batuhanduyuler@gmail.com"
+# # newMail.send_mail(receiverAddress, "Selamun Aleykum Kardes, Bu Mail bir test mailidir.")
+# htmlMsg = "Selamlar !\n"
+# newMail.send_mail_with_html_buffer(receiverAddress, htmlMsg)
+
+# myPredictions.indicatorManager.bollinger.plotStrategy()
 

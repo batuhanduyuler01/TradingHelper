@@ -79,26 +79,20 @@ class MACD :
                 self.macd_signal.append(0)
 
     def plotStrategy(self):
-        self.implementStrategy()
+        if (len(self.__buy_price) != 0):
+            pass
+        else :
+            self.implementStrategy()
 
-        ax1 = plt.subplot2grid((15,1), (0,0), rowspan = 8, colspan = 1)
-        ax2 = plt.subplot2grid((15,1), (10,0), rowspan = 8, colspan = 1)
+        fig = plt.figure()
+        ax1 = plt.subplot2grid((15,1), (0,0), rowspan = 8, colspan = 1, fig=fig)
 
         ax1.plot(self.data.Close , color = 'skyblue', linewidth = 2, label = 'KAĞIT')
         ax1.plot(self.data.index, self.__buy_price, marker = '^', color = 'green', markersize = 10, label = 'Alım Sinyali', linewidth = 0)     
         ax1.plot(self.data.index, self.__sell_price, marker = 'v', color = 'r', markersize = 10, label = 'Satış Sinyali', linewidth = 0)     
         ax1.legend()
         ax1.set_title('MACD Stratejisi')
-        ax2.plot(self.macd_df['MACD'], color = 'grey', linewidth = 1.5, label = 'MACD')
-        ax2.plot(self.macd_df['signal'], color = 'skyblue', linewidth = 1.5, label = 'Signal')
-
-        for element in range(len(self.macd_df)):
-            if str(self.macd_df['hist'][element])[0] == '-':
-                ax2.bar(self.macd_df.index[element], self.macd_df['hist'][element], color = '#ef5350')
-            else:
-                ax2.bar(self.macd_df.index[element], self.macd_df['hist'][element], color = '#26a69a')
-        plt.legend(loc = 'lower right')
-        plt.show()
+        return fig
 
     def getStrategyDF(self):
         temp_df = pd.DataFrame(list(zip(self.data.Date[1:].to_list(), self.data.Close[1:].to_list(), self.macd_signal[1:])), columns=["Date", "Close", "Signal"])
